@@ -1,0 +1,1 @@
+MiWA App - Mini Wallet Application
