@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @OpenAPIDefinition(
 		info = @Info(
-				title = "MiWa API",
+				title = "MiWa API Backend",
 				version = "1.0.0",
 				description = "Documentation REST API MiWa App"
 		)

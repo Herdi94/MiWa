@@ -1,10 +1,12 @@
 package com.tech.app.miwa.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.Set;
 
+@Builder
 @Getter
 @Setter
 @NoArgsConstructor
@@ -20,6 +22,7 @@ public class User {
     private String password;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
     private Set<Wallet> walletSet;
 
 }

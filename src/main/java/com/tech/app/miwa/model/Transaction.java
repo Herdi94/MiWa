@@ -1,13 +1,12 @@
 package com.tech.app.miwa.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+@Builder
 @Getter
 @Setter
 @AllArgsConstructor
@@ -18,9 +17,10 @@ public class Transaction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String type; // "TOPUP", "TRANSFER"
+    @Enumerated(EnumType.STRING)
+    private TransactionType type;
 
-    private Double amount;
+    private BigDecimal amount;
 
     private String description;
 

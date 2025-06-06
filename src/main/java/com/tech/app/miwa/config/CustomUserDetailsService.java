@@ -1,4 +1,4 @@
-package com.tech.app.miwa.security;
+package com.tech.app.miwa.config;
 
 import com.tech.app.miwa.model.User;
 import com.tech.app.miwa.repository.UserRepository;
@@ -21,7 +21,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         return org.springframework.security.core.userdetails.User.builder()
                 .username(user.getUsername())
                 .password(user.getPassword())
-                .roles("USER")  // You can customize roles here
+                .roles("USER")
                 .build();
     }
 }
