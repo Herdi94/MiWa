@@ -1,7 +1,9 @@
 package com.tech.app.miwa.controller;
 
 import com.tech.app.miwa.model.User;
+import com.tech.app.miwa.model.Wallet;
 import com.tech.app.miwa.repository.UserRepository;
+import com.tech.app.miwa.repository.WalletRepository;
 import com.tech.app.miwa.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
@@ -14,6 +16,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.math.BigDecimal;
+
 @Controller
 public class AuthController {
 
@@ -22,6 +26,9 @@ public class AuthController {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private WalletRepository walletRepository;
 
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -61,6 +68,13 @@ public class AuthController {
         user.setUsername(username);
         user.setPassword(authService.encodePassword(password));
         userRepository.save(user);
+
+        Wallet wallet = new Wallet();
+        wallet.setName(user.getUsername());
+        wallet.setBalance(new BigDecimal(0));
+        wallet.setUser(user);
+
+        walletRepository.save(wallet);
 
         return "redirect:/login";
     }
