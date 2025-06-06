@@ -4,10 +4,14 @@ import com.tech.app.miwa.model.Transaction;
 import com.tech.app.miwa.repository.TransactionRepository;
 import com.tech.app.miwa.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.ByteArrayInputStream;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -46,6 +50,20 @@ public class TransactionController {
         try {
             List<Transaction> transactions = transactionService.historyTrx(walletId);
             return ResponseEntity.ok(transactions);
+        }catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unexpected Error : "+e.getMessage());
+        }
+    }
+
+    @GetMapping("/export-excel")
+    public ResponseEntity<?> exportToExcel(@RequestParam Long walletId) {
+        try {
+            ByteArrayInputStream stream = transactionService.exportToExcel(walletId);
+            InputStreamResource resource = new InputStreamResource(stream);
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=transactions.xlsx")
+                    .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                    .body(resource);
         }catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unexpected Error : "+e.getMessage());
         }

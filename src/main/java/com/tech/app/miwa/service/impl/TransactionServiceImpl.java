@@ -6,11 +6,19 @@ import com.tech.app.miwa.model.Wallet;
 import com.tech.app.miwa.repository.TransactionRepository;
 import com.tech.app.miwa.repository.WalletRepository;
 import com.tech.app.miwa.service.TransactionService;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Service
@@ -56,6 +64,38 @@ public class TransactionServiceImpl implements TransactionService {
     public List<Transaction> historyTrx(Long walletId) throws Exception {
         Wallet wallet = findWalletById(walletId);
         return transactionRepository.findBySourceWalletOrTargetWallet(wallet, wallet);
+    }
+
+    @Override
+    public ByteArrayInputStream  exportToExcel(Long walletId) throws Exception {
+        List<Transaction> transactions = historyTrx(walletId);
+
+        String[] columns = {"ID", "Type", "Amount", "Source Wallet", "Target Wallet", "Timestamp"};
+
+        try (Workbook workbook = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
+            Sheet sheet = workbook.createSheet("Transactions");
+
+            Row headerRow = sheet.createRow(0);
+            for (int col = 0; col < columns.length; col++) {
+                Cell cell = headerRow.createCell(col);
+                cell.setCellValue(columns[col]);
+            }
+
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+            int rowIdx = 1;
+            for (Transaction trx : transactions) {
+                Row row = sheet.createRow(rowIdx++);
+                row.createCell(0).setCellValue(trx.getId());
+                row.createCell(1).setCellValue(trx.getType().toString());
+                row.createCell(2).setCellValue(trx.getAmount().doubleValue());
+                row.createCell(3).setCellValue(trx.getSourceWallet() != null ? trx.getSourceWallet().getName() : "-");
+                row.createCell(4).setCellValue(trx.getTargetWallet() != null ? trx.getTargetWallet().getName() : "-");
+                row.createCell(5).setCellValue(trx.getTimestamp().format(formatter));
+            }
+
+            workbook.write(out);
+            return new ByteArrayInputStream(out.toByteArray());
+        }
     }
 
     private Wallet findWalletById(Long walletId){
