@@ -1,5 +1,6 @@
 package com.tech.app.miwa.controller;
 
+import com.tech.app.miwa.config.JwtTokenUtil;
 import com.tech.app.miwa.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -10,18 +11,29 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.transaction.TransactionSystemException;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RequestMapping("/api/user")
 @RestController
 public class UserController {
 
     @Autowired
     private UserService userService;
-    
+
+    @Autowired
+    private JwtTokenUtil jwtTokenUtil;
+
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestParam String username, @RequestParam String password) {
         try {
             boolean auth = userService.login(username, password);
-            return ResponseEntity.ok("Login Status "+(auth ? "Logged In" : "Not Logged In"));
+            if(auth) {
+                String token = jwtTokenUtil.generateToken(username);
+                return ResponseEntity.ok(Map.of("token", token));
+            }else {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(Map.of("message", "Login failed: invalid username or password"));
+            }
         } catch (AuthenticationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("invalid username and password!");
         } catch (Exception e) {
