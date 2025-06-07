@@ -12,4 +12,5 @@ public interface WalletService {
     void createAccountWallet(Long userId) throws Exception;
     void deleteAccountWallet(Long walletId) throws Exception;
     List<Wallet> otherWallets(Long walletId) throws Exception;
+    Wallet getWallet(String username) throws Exception;
 }

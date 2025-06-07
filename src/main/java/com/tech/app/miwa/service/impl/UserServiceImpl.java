@@ -32,12 +32,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void register(String username, String password) throws Exception {
+    public User register(String username, String password) throws Exception {
         User user = User.builder()
                 .username(username)
                 .password(encodePassword(password))
                 .build();
-        userRepository.save(user);
+        return userRepository.save(user);
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.tech.app.miwa.controller;
 
 import com.tech.app.miwa.config.JwtTokenUtil;
+import com.tech.app.miwa.model.User;
 import com.tech.app.miwa.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -44,8 +45,10 @@ public class UserController {
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestParam String username, @RequestParam String password) {
         try{
-            userService.register(username, password);
-            return ResponseEntity.ok("Successfully created new user");
+            User user = userService.register(username, password);
+            return ResponseEntity.ok(Map.of(
+                    "user", user,
+                    "message", "Successfully created new user"));
         }catch (DataIntegrityViolationException e){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to save user - username already exist.");
         }catch (TransactionSystemException e){

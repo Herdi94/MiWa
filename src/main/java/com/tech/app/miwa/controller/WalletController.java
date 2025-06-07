@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.transaction.TransactionSystemException;
 import org.springframework.web.bind.annotation.*;
 
@@ -73,6 +74,17 @@ public class WalletController {
         try {
             List<Wallet> otherWallets = walletService.otherWallets(walletId);
             return ResponseEntity.ok(otherWallets);
+        }catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unexpected Error : "+e.getMessage());
+        }
+    }
+
+    @GetMapping
+    public ResponseEntity<?> getWallet(Authentication authentication) {
+        try {
+            String username = authentication.getName();
+            Wallet wallet = walletService.getWallet(username);
+            return ResponseEntity.ok(wallet);
         }catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unexpected Error : "+e.getMessage());
         }

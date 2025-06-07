@@ -25,7 +25,8 @@ public class Transaction {
 
     private String description;
 
-    @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
+    @JsonFormat(pattern = "d/M/yyyy, h:mm:ss a",
+                locale = "en_US")
     private LocalDateTime timestamp;
 
     @ManyToOne

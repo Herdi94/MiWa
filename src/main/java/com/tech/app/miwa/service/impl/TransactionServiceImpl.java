@@ -20,6 +20,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
 
 @Service
 public class TransactionServiceImpl implements TransactionService {
@@ -70,10 +71,10 @@ public class TransactionServiceImpl implements TransactionService {
     public ByteArrayInputStream  exportToExcel(Long walletId) throws Exception {
         List<Transaction> transactions = historyTrx(walletId);
 
-        String[] columns = {"ID", "Type", "Amount", "Source Wallet", "Target Wallet", "Timestamp"};
+        String[] columns = {"ID", "Type", "Amount", "Source Wallet", "Target Wallet", "Date"};
 
         try (Workbook workbook = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
-            Sheet sheet = workbook.createSheet("Transactions");
+            Sheet sheet = workbook.createSheet("transaction_history");
 
             Row headerRow = sheet.createRow(0);
             for (int col = 0; col < columns.length; col++) {
@@ -81,11 +82,13 @@ public class TransactionServiceImpl implements TransactionService {
                 cell.setCellValue(columns[col]);
             }
 
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy, h:mm:ss a", Locale.US);
+
             int rowIdx = 1;
+            int index = 1;
             for (Transaction trx : transactions) {
                 Row row = sheet.createRow(rowIdx++);
-                row.createCell(0).setCellValue(trx.getId());
+                row.createCell(0).setCellValue(index++);
                 row.createCell(1).setCellValue(trx.getType().toString());
                 row.createCell(2).setCellValue(trx.getAmount().doubleValue());
                 row.createCell(3).setCellValue(trx.getSourceWallet() != null ? trx.getSourceWallet().getName() : "-");

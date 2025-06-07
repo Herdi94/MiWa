@@ -8,6 +8,8 @@ import com.tech.app.miwa.repository.UserRepository;
 import com.tech.app.miwa.repository.WalletRepository;
 import com.tech.app.miwa.service.WalletService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -65,6 +67,13 @@ public class WalletServiceImpl implements WalletService {
     @Override
     public List<Wallet> otherWallets(Long walletId) throws Exception {
         return walletRepo.findOtherById(walletId);
+    }
+
+    @Override
+    public Wallet getWallet(String username) throws Exception {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        return walletRepo.findByUserId(user.getId());
     }
 
     private Wallet findWalletById(Long walletId){

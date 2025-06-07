@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 public interface WalletRepository extends JpaRepository<Wallet, Long> {
-    List<Wallet> findByUser(User user);
+    Wallet findByUserId(Long userId);
 
     @Query(value = "SELECT w.* FROM wallet w WHERE w.id <> :walletId", nativeQuery = true)
     List<Wallet> findOtherById(Long walletId);
